@@ -1,0 +1,70 @@
+#include <iostream>
+using namespace std;
+struct Cell{
+    int numero;
+    int altura;
+    Cell* pai;
+    Cell(int i){
+        this->altura = 0;
+        this->numero = i;
+        this->pai = this;
+    }
+};
+
+Cell* find(Cell* a){
+    if(a->pai == a){
+        return a;
+    }else{
+        return find(a->pai);
+    }
+}
+void uniom(Cell* a,Cell* b){
+    Cell* um = find(a);
+    Cell* dois = find(b);
+    if(um->altura == dois->altura){
+        dois->pai= um;
+        um->altura++;
+    }else if(um->altura > dois->altura){
+        dois->pai = um;
+    }else{
+        um->pai = dois;
+    }
+}
+int main() {
+    int numCasos;
+    cin >> numCasos;
+    for(int cont = 0; cont < numCasos; cont++){
+        int tLab, numBreak, numTestes ;
+        cin >> tLab>> numBreak>> numTestes;
+        Cell* celulas[tLab*tLab];
+        for(int i = 0;i < tLab*tLab; i++){
+            celulas[i] = new Cell(i);
+        }
+        while(numBreak > 0){
+            int parede;
+            cin >>parede;
+            int celula1 = -1;
+            int celula2 = -1;
+            if(parede%((tLab*2)-1) < tLab -1){
+                celula1 = tLab*(parede/(tLab*2 -1)) + parede%(tLab*2 -1);
+                celula2 = celula1 + 1;
+            }else{
+                celula1 = tLab*(parede/(tLab*2 -1)) + parede%(tLab*2 -1) +1;
+                celula2 = celula1 - tLab;
+            }
+            uniom(celulas[celula1],celulas[celula2]);
+            numBreak--;
+        }
+        for(int cont2 = 0; cont2 < numTestes; cont2++){
+            int celulaA, celulaB;
+            cin >> celulaA >> celulaB;
+            if(find(celulas[celulaA])->numero == find(celulas[celulaB])->numero){
+                cout << cont << "." << cont2 << " " << 1 << endl;
+            }else{
+                cout << cont << "." << cont2 << " " << 0 << endl;
+            }
+        }
+        cout << endl;
+    }
+    return 0;
+}
